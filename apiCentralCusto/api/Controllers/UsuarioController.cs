@@ -72,31 +72,31 @@ namespace api.Controllers
         }
 
         [HttpPut("atualizar/{id}")]
-public async Task<IActionResult> AtualizarUsuario(int id, [FromBody] Usuario usuarioAtualizado)
-{
-    var usuario = await _context.Usuarios
-        .Include(u => u.CentralCusto) // Incluir a central de custo relacionada
-        .FirstOrDefaultAsync(u => u.Id == id);
+        public async Task<IActionResult> AtualizarUsuario(int id, [FromBody] Usuario usuarioAtualizado)
+        {
+            var usuario = await _context.Usuarios
+                .Include(u => u.CentralCusto) // Incluir a central de custo relacionada
+                .FirstOrDefaultAsync(u => u.Id == id);
 
-    if (usuario == null)
-    {
-        return NotFound("Usuário não encontrado.");
-    }
+            if (usuario == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
 
-    // Atualiza os campos permitidos
-    usuario.Nome = usuarioAtualizado.Nome;
-    usuario.Email = usuarioAtualizado.Email;
-    usuario.Senha = usuarioAtualizado.Senha;
-    usuario.DataNascimento = usuarioAtualizado.DataNascimento;
+            // Atualiza os campos permitidos
+            usuario.Nome = usuarioAtualizado.Nome;
+            usuario.Email = usuarioAtualizado.Email;
+            usuario.Senha = usuarioAtualizado.Senha;
+            usuario.DataNascimento = usuarioAtualizado.DataNascimento;
 
-    // Não alteramos a CentralCusto nem o UsuarioId, pois a central de custo não deve ser alterada
-    // A CentralCusto permanece associada ao usuário original.
+            // Não alteramos a CentralCusto nem o UsuarioId, pois a central de custo não deve ser alterada
+            // A CentralCusto permanece associada ao usuário original.
 
-    _context.Usuarios.Update(usuario);
-    await _context.SaveChangesAsync();
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
 
-    return Ok(usuario); // Retorna o usuário atualizado
-}
+            return Ok(usuario); // Retorna o usuário atualizado
+        }
 
     }
 }
