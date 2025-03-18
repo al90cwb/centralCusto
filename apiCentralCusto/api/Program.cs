@@ -1,11 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using api.model;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adicionar serviços ao contêiner.
 builder.Services.AddControllers();
+
+//adicionando cors
+builder.Services.AddCors(
+    options => 
+        options.AddPolicy("Acesso Total",configs=>configs
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod() )
+);
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -16,6 +24,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+
+//Requisição - URL e método / verbo http
+app.MapGet("/", () => "API de Central de Custos");
+
 // Configurar o pipeline de requisições.
 if (app.Environment.IsDevelopment())
 {
@@ -25,6 +37,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+
 app.MapControllers();
 
+app.UseCors("Acesso Total");
 app.Run();

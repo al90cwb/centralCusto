@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Models;
-using api.model;
+using api.Services;
+using api.Data;
 
 namespace api.Controllers
 {
@@ -10,24 +11,32 @@ namespace api.Controllers
     public class CentralCustoController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly CentralCustoService _service;
 
-        public CentralCustoController(AppDbContext context)
+        public CentralCustoController(AppDbContext context, CentralCustoService service)
         {
             _context = context;
+            _service = service;
         }
 
         // GET: api/centralcusto
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CentralCusto>>> GetCentralCustos()
         {
-            return await _context.CentralCustos.ToListAsync();
+            return await _context.CentralCustos
+                .Include(c => c.Entradas)
+                .Include(c => c.Saidas)
+                .ToListAsync();
         }
 
         // GET: api/centralcusto/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<CentralCusto>> GetCentralCusto(int id)
         {
-            var centralCusto = await _context.CentralCustos.FindAsync(id);
+            var centralCusto = await _context.CentralCustos
+                .Include(c => c.Entradas)
+                .Include(c => c.Saidas)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (centralCusto == null)
             {
@@ -93,10 +102,77 @@ namespace api.Controllers
             return NoContent();
         }
 
+        // Editar lançamento de entrada
+        [HttpPut("{id}/entrada/{entradaId}")]
+        public async Task<IActionResult> EditarLancamentoEntrada(int id, int entradaId, LancamentoEntrada lancamentoEntrada)
+        {
+            var centralCusto = await _context.CentralCustos.Include(c => c.Entradas).FirstOrDefaultAsync(c => c.Id == id);
+            if (centralCusto == null)
+            {
+                return NotFound("Central de Custo não encontrada.");
+            }
+
+            var entrada = centralCusto.Entradas.FirstOrDefault(e => e.Id == entradaId);
+            if (entrada == null)
+            {
+                return NotFound("Lançamento de Entrada não encontrado.");
+            }
+
+            entrada.Descricao = lancamentoEntrada.Descricao;
+            entrada.Valor = lancamentoEntrada.Valor;
+            entrada.DataVencimento = lancamentoEntrada.DataVencimento;
+            entrada.DataInicio = lancamentoEntrada.DataInicio;
+            entrada.DuracaoMeses = lancamentoEntrada.DuracaoMeses;
+            entrada.PagamentoConfirmado = lancamentoEntrada.PagamentoConfirmado;
+            entrada.EstadoLancamento = lancamentoEntrada.EstadoLancamento;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // Editar lançamento de saída
+        [HttpPut("{id}/saida/{saidaId}")]
+        public async Task<IActionResult> EditarLancamentoSaida(int id, int saidaId, LancamentoSaida lancamentoSaida)
+        {
+            var centralCusto = await _context.CentralCustos.Include(c => c.Saidas).FirstOrDefaultAsync(c => c.Id == id);
+            if (centralCusto == null)
+            {
+                return NotFound("Central de Custo não encontrada.");
+            }
+
+            var saida = centralCusto.Saidas.FirstOrDefault(s => s.Id == saidaId);
+            if (saida == null)
+            {
+                return NotFound("Lançamento de Saída não encontrado.");
+            }
+
+            saida.Descricao = lancamentoSaida.Descricao;
+            saida.Valor = lancamentoSaida.Valor;
+            saida.DataVencimento = lancamentoSaida.DataVencimento;
+            saida.DataPagamento = lancamentoSaida.DataPagamento;
+            saida.PagamentoConfirmado = lancamentoSaida.PagamentoConfirmado;
+            saida.EstadoLancamento = lancamentoSaida.EstadoLancamento;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // Obter visão mensal
+        [HttpGet("{id}/visao-mensal")]
+        public async Task<ActionResult<VisaoMensalDTO>> GetVisaoMensal(int id, [FromQuery] int ano, [FromQuery] int mes)
+        {
+            var visaoMensal = await _service.ObterVisaoMensal(id, ano, mes);
+            if (visaoMensal == null)
+            {
+                return NotFound("Central de Custo não encontrada.");
+            }
+
+            return Ok(visaoMensal);
+        }
+
         private bool CentralCustoExists(int id)
         {
             return _context.CentralCustos.Any(e => e.Id == id);
         }
     }
 }
-//http://localhost:5114/swagger/index.html

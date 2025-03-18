@@ -16,7 +16,7 @@ namespace api.Controllers
             _context = context;
         }
 
-        // POST: api/usuario/cadastrar
+       // POST: api/usuario/cadastrar
         [HttpPost("cadastrar")]
         public async Task<ActionResult<Usuario>> CadastrarUsuario([FromBody] Usuario usuario)
         {
@@ -30,11 +30,15 @@ namespace api.Controllers
             if (usuarioExistente != null)
                 return Conflict("Já existe um usuário com este email.");
 
+            // Adiciona o usuário ao banco de dados primeiro
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync(); // ✅ Agora usuario.Id existe!
+
             // Cria a central de custo associada ao usuário
             var centralCusto = new CentralCusto
             {
                 Descricao = "Central de Custo de " + usuario.Nome,
-                UsuarioId = usuario.Id,
+                UsuarioId = usuario.Id, // ✅ Agora o ID existe!
                 DataCriacao = DateTime.Now
             };
 
@@ -44,9 +48,7 @@ namespace api.Controllers
 
             // Atribui a central de custo criada ao usuário
             usuario.CentralCustoId = centralCusto.Id;
-
-            // Adiciona o usuário ao banco de dados
-            _context.Usuarios.Add(usuario);
+            _context.Usuarios.Update(usuario);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(CadastrarUsuario), new { id = usuario.Id }, usuario);
@@ -96,6 +98,19 @@ namespace api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(usuario); // Retorna o usuário atualizado
+        }
+
+        [HttpGet("listar")]
+        public async Task<ActionResult<IEnumerable<Usuario>>> ListarUsuarios()
+        {
+            var usuarios = await _context.Usuarios.ToListAsync();
+
+            if (usuarios == null || usuarios.Count == 0)
+            {
+                return NotFound("Nenhum usuário encontrado.");
+            }
+
+            return Ok(usuarios);
         }
 
     }

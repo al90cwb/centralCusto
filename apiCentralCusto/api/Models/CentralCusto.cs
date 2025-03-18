@@ -1,12 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using api.model;
+using System.Text.Json.Serialization;
+using api.Models;
 
-namespace api.Models;
-
-public class CentralCusto
+namespace api.Models
 {
+    public class CentralCusto
+    {
         [Key]
         public int Id { get; set; }
 
@@ -15,15 +16,17 @@ public class CentralCusto
 
         // Relacionamento 1:1 com Usuario
         [Required]
-        public int UsuarioId { get; set; }
+        public int? UsuarioId { get; set; }
 
         [ForeignKey("UsuarioId")]
-        public Usuario Usuario { get; set; }
+        [JsonIgnore]
+        public Usuario? Usuario { get; set; }
 
         // Listas de lançamentos de entradas e saídas
-        public List<LancamentoEntrada> Entradas { get; set; } = new List<LancamentoEntrada>();
-        public List<LancamentoSaida> Saidas { get; set; } = new List<LancamentoSaida>();
+        public List<LancamentoEntrada>? Entradas { get; set; } = new List<LancamentoEntrada>();
+        public List<LancamentoSaida>? Saidas { get; set; } = new List<LancamentoSaida>();
 
         // Data de criação automática
         public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+    }
 }

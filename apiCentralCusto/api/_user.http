@@ -1,0 +1,98 @@
+GET http://localhost:5114
+
+### LISTAR USUÁRIOS
+GET http://localhost:5114/api/usuario/listar
+Content-Type: application/json
+
+### CADASTRAR USUÁRIO
+POST http://localhost:5114/api/usuario/cadastrar
+Content-Type: application/json
+
+{
+   "nome": "Felipe",
+   "email": "felipe@email.com",
+   "senha": "123456",
+   "dataNascimento": "2000-05-15"
+}
+
+GET http://localhost:5114
+
+### LISTAR CENTRAIS DE CUSTO
+GET http://localhost:5114/api/centralcusto
+Content-Type: application/json
+
+### OBTER CENTRAL DE CUSTO POR ID
+GET http://localhost:5114/api/centralcusto/{id}
+Content-Type: application/json
+
+### CADASTRAR CENTRAL DE CUSTO
+POST http://localhost:5114/api/centralcusto
+Content-Type: application/json
+
+{
+   "nome": "Central A",
+   "descricao": "Descrição da central de custo"
+}
+
+### ALTERAR CENTRAL DE CUSTO
+PUT http://localhost:5114/api/centralcusto/{id}
+Content-Type: application/json
+
+{
+   "id": 1,
+   "nome": "Central A - Atualizada",
+   "descricao": "Nova descrição"
+}
+
+
+
+### ADICIONAR LANÇAMENTO DE ENTRADA
+POST http://localhost:5114/api/centralcusto/{id}/entrada
+Content-Type: application/json
+
+{
+   "valor": 100.00,
+   "descricao": "Entrada de teste"
+}
+
+### REMOVER LANÇAMENTO DE ENTRADA
+DELETE http://localhost:5114/api/centralcusto/{id}/entrada/{entradaId}
+
+### ADICIONAR LANÇAMENTO DE SAÍDA
+POST http://localhost:5114/api/centralcusto/{id}/saida
+Content-Type: application/json
+
+{
+   "valor": 50.00,
+   "descricao": "Saída de teste"
+}
+
+### REMOVER LANÇAMENTO DE SAÍDA
+DELETE http://localhost:5114/api/centralcusto/{id}/saida/{saidaId}
+
+### EDITAR LANÇAMENTO ENTRADA
+PUT http://localhost:5114/api/centralcusto/1/entrada/2
+Content-Type: application/json
+
+{
+   "descricao": "Recebimento de Cliente Atualizado",
+   "valor": 2500.00,
+   "dataVencimento": "2025-04-01",
+   "dataInicio": "2025-03-01",
+   "duracaoMeses": 12,
+   "pagamentoConfirmado": true,
+   "estadoLancamento": 1
+}
+
+### EDITAR LANÇAMENTO SAIDA
+PUT http://localhost:5114/api/centralcusto/1/saida/3
+Content-Type: application/json
+
+{
+   "descricao": "Pagamento de Fornecedor Atualizado",
+   "valor": 1500.00,
+   "dataVencimento": "2025-04-10",
+   "dataPagamento": "2025-03-15",
+   "pagamentoConfirmado": true,
+   "estadoLancamento": 2
+}

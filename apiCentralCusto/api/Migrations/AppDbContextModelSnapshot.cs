@@ -79,6 +79,9 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
                     b.ToTable("CentralCustos");
                 });
 
@@ -165,7 +168,7 @@ namespace api.Migrations
                     b.ToTable("LancamentoSaidas");
                 });
 
-            modelBuilder.Entity("api.model.Usuario", b =>
+            modelBuilder.Entity("api.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,6 +192,7 @@ namespace api.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Senha")
@@ -198,6 +202,17 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("api.Models.CentralCusto", b =>
+                {
+                    b.HasOne("api.Models.Usuario", "Usuario")
+                        .WithOne("CentralCusto")
+                        .HasForeignKey("api.Models.CentralCusto", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("api.Models.LancamentoEntrada", b =>
@@ -235,6 +250,11 @@ namespace api.Migrations
                     b.Navigation("Entradas");
 
                     b.Navigation("Saidas");
+                });
+
+            modelBuilder.Entity("api.Models.Usuario", b =>
+                {
+                    b.Navigation("CentralCusto");
                 });
 #pragma warning restore 612, 618
         }

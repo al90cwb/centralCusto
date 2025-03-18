@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using api.Models.Enums;
 
 namespace api.Models
@@ -29,7 +30,8 @@ namespace api.Models
         public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
 
         // Relacionamento 1:1 com CentralCusto
-        public CentralCusto CentralCusto { get; set; }
+        [JsonIgnore]
+        public CentralCusto? CentralCusto { get; set; }
 
         [ForeignKey("CentralCusto")]
         public int? CentralCustoId { get; set; } // Pode ser nulo caso um usuário não tenha uma central de custo atribuída

@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using api.Models;
 
-namespace api.model;
+namespace api.Data;
 
 public class AppDbContext : DbContext
 {
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<CentralCusto> CentralCustos { get; set; }
     public DbSet<CategoriaEntrada> CategoriaEntradas { get; set; }
@@ -12,21 +14,14 @@ public class AppDbContext : DbContext
     public DbSet<LancamentoEntrada> LancamentoEntradas { get; set; }
     public DbSet<LancamentoSaida> LancamentoSaidas { get; set; }
 
-     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite("Data Source=centralCustoDb.db");
-    }
-
-    // Configuração da relação entre Usuario e CentralCusto
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Configuração de deleção em cascata
         modelBuilder.Entity<Usuario>()
-            .HasOne(u => u.CentralCusto) // Definindo a relação
-            .WithOne(c => c.Usuario) // Relacionando com a central de custo
+            .HasOne(u => u.CentralCusto)
+            .WithOne(c => c.Usuario)
             .HasForeignKey<CentralCusto>(c => c.UsuarioId)
-            .OnDelete(DeleteBehavior.Cascade); // Define que, ao excluir um usuário, a central de custo será excluída também
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
