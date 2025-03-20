@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-namespace api.Models
-{
+namespace api.Models;
     public class VisaoAnualDTO
     {
         public int Ano { get; set; }
@@ -20,4 +19,4 @@ namespace api.Models
             TotalSaidasPorCategoriaPorMes = new Dictionary<int, Dictionary<string, decimal>>();
         }
     }
-}
+

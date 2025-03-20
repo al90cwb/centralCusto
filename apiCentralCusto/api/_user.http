@@ -15,39 +15,24 @@ Content-Type: application/json
    "dataNascimento": "2000-05-15"
 }
 
-GET http://localhost:5114
-
 ### LISTAR CENTRAIS DE CUSTO
 GET http://localhost:5114/api/centralcusto
 Content-Type: application/json
 
 ### OBTER CENTRAL DE CUSTO POR ID
-GET http://localhost:5114/api/centralcusto/{id}
+GET http://localhost:5114/api/centralcusto/1
 Content-Type: application/json
-
-### CADASTRAR CENTRAL DE CUSTO
-POST http://localhost:5114/api/centralcusto
-Content-Type: application/json
-
-{
-   "nome": "Central A",
-   "descricao": "Descrição da central de custo"
-}
 
 ### ALTERAR CENTRAL DE CUSTO
-PUT http://localhost:5114/api/centralcusto/{id}
+PATCH http://localhost:5114/api/centralcusto/2
 Content-Type: application/json
 
 {
-   "id": 1,
-   "nome": "Central A - Atualizada",
-   "descricao": "Nova descrição"
+   "descricao": "Central B - Descrição Atualizada"
 }
 
-
-
 ### ADICIONAR LANÇAMENTO DE ENTRADA
-POST http://localhost:5114/api/centralcusto/{id}/entrada
+POST http://localhost:5114/api/centralcusto/{1}/entrada
 Content-Type: application/json
 
 {

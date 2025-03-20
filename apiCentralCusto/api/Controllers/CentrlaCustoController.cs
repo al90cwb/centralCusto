@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Models;
 using api.Services;
 using api.Data;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace api.Controllers
 {
@@ -86,21 +87,40 @@ namespace api.Controllers
             return NoContent();
         }
 
-        // DELETE: api/centralcusto/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCentralCusto(int id)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchCentralCusto(int id, [FromBody] CentralCustoUpdateDTO centralCustoUpdateDTO)
         {
+            if (centralCustoUpdateDTO == null)
+            {
+                return BadRequest("Dados de atualização não podem ser nulos.");
+            }
+
             var centralCusto = await _context.CentralCustos.FindAsync(id);
             if (centralCusto == null)
             {
-                return NotFound();
+                return NotFound("Central de custo não encontrada.");
             }
 
-            _context.CentralCustos.Remove(centralCusto);
+            // Atualiza apenas os campos fornecidos
+            if (centralCustoUpdateDTO.Descricao != null)
+            {
+                centralCusto.Descricao = centralCustoUpdateDTO.Descricao;
+            }
+
+            // Valida o objeto após a atualização
+            TryValidateModel(centralCusto);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Salva as alterações no banco de dados
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+        
 
         // Editar lançamento de entrada
         [HttpPut("{id}/entrada/{entradaId}")]

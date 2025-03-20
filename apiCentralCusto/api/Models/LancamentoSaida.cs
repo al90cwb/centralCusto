@@ -1,4 +1,3 @@
-using System;
 using api.Models.Enums;
 
 namespace api.Models;
